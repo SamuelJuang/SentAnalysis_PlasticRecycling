@@ -8,6 +8,5 @@ tensorflow
 keras
 seaborn
 nltk
-os
 Sastrawi
 joblib
