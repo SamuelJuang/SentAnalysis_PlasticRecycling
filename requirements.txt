@@ -4,8 +4,8 @@ numpy
 scikit-learn
 scipy
 matplotlib
-tensorflow
-keras
+tensorflow==2.11.0
+keras==2.11.0
 seaborn
 nltk
 Sastrawi
