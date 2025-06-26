@@ -1,0 +1,13 @@
+streamlit
+pandas
+numpy
+scikit-learn
+scipy
+matplotlib
+tensorflow
+keras
+seaborn
+nltk
+os
+Sastrawi
+joblib

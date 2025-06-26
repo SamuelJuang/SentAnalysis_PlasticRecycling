@@ -2,8 +2,6 @@ from sklearn.model_selection import train_test_split
 import pandas as pd
 import streamlit as st
 from sklearn.feature_extraction.text import TfidfVectorizer
-import re
-import emoji
 from Sastrawi.StopWordRemover.StopWordRemoverFactory import StopWordRemoverFactory
 from Sastrawi.Stemmer.StemmerFactory import StemmerFactory
 import nltk
@@ -12,8 +10,6 @@ from tensorflow.keras.models import Model
 from tensorflow.keras.layers import Input, Dense, Dropout, Embedding, LSTM, Bidirectional
 import tensorflow as tf
 from tensorflow.keras.callbacks import Callback
-import io
-from contextlib import redirect_stdout
 import numpy as np
 import joblib
 import os
