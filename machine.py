@@ -103,7 +103,7 @@ def lstm(lstm_units,re_dropout, dense_units,dropout_rate, epoch_num):
     bar.progress(0.5)
     inputs = Input(shape=(max_len,))
     x = Embedding(input_dim=vocab_size, output_dim=embedding_dim, input_length=max_len)(inputs)
-    x = Bidirectional(LSTM(lstm_units,reccurent_dropout=re_dropout))(x)
+    x = Bidirectional(LSTM(lstm_units,recurrent_dropout=re_dropout))(x)
     x = Dense(dense_units, activation='relu')(x)
     x = Dropout(dropout_rate)(x)
 
