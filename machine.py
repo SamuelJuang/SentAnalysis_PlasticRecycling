@@ -215,10 +215,10 @@ if os.path.exists('cleaned_and_normalized_data.csv') or os.path.exists('oversamp
     batch_size = st.slider("Batch Size", 8, 32, 128, step=8)
     if st.button("Train Model with LSTM"):
         lstm(lstm_units=lstm_units, 
-             dense1_units=dense_units, 
-             dropout1_rate=dropout_rate
-             epochs=epochs, 
-             batch_size=batch_size,
-             bidirectional=bidirectional)
+             re_dropout=reccurent_dropout,
+             dense_units=dense_units, 
+             dropout_rate=dropout_rate,
+             epochs_num=epochs, 
+             )
 else:
     st.info("Please preprocess the data first before training.")
