@@ -33,8 +33,8 @@ class StreamlitProgressBarCallback(Callback):
         self.progress_bar.progress(progress)
         self.status_text.text(f"Epoch {self.current_epoch}/{self.epochs} completed.")
 
-def lstm(lstm_units, dense1_units, dropout1_rate,
-          dense2_units, dropout2_rate, dense3_units, dropout3_rate, epochs, batch_size, bidirectional=True):
+def lstm(lstm_units,re_dropout, dense_units,dropout_rate, epoch_num):
+         
     if(os.path.exists('oversampled_data.csv')):
         df_encoded = pd.read_csv('oversampled_data.csv')
     else:
@@ -100,22 +100,12 @@ def lstm(lstm_units, dense1_units, dropout1_rate,
     embedding_dim = 100
     max_len = X_train_pad.shape[1]
 
-    (lstm_units, dense1_units, dropout1_rate,
-          dense2_units, dropout2_rate, dense3_units, dropout3_rate, epochs, batch_size)
-
     bar.progress(0.5)
     inputs = Input(shape=(max_len,))
     x = Embedding(input_dim=vocab_size, output_dim=embedding_dim, input_length=max_len)(inputs)
-    if(bidirectional):
-        x = Bidirectional(LSTM(lstm_units))(x)
-    else:
-        x = LSTM(lstm_units)(x)
-    x = Dense(dense1_units, activation='relu')(x)
-    x = Dropout(dropout1_rate)(x)
-    x = Dense(dense2_units, activation='relu')(x)
-    x = Dropout(dropout2_rate)(x)
-    x = Dense(dense3_units, activation='relu')(x)
-    x = Dropout(dropout3_rate)(x)
+    x = Bidirectional(LSTM(lstm_units,reccurent_dropout=re_dropout))(x)
+    x = Dense(dense_units, activation='relu')(x)
+    x = Dropout(dropout_rate)(x)
 
     output_general = Dense(3, activation='softmax', name='recycle')(x)
     output_pet = Dense(3, activation='softmax', name='pet')(x)
@@ -150,16 +140,8 @@ def lstm(lstm_units, dense1_units, dropout1_rate,
             'process': y_process_train,
             'future': y_effective_train
         },
-        validation_data=(
-            X_test_pad,
-            {
-                'recycle': y_recycle_test,
-                'pet': y_pet_test,
-                'process': y_process_test,
-                'future': y_effective_test
-            }
-        ),
-        epochs=10,
+        validation_split = 0.2,
+        epochs=epoch_num,
         batch_size=32,
         callbacks=[callback, EarlyStopping(monitor='val_loss', patience=3, restore_best_weights=True)]
     )
@@ -223,27 +205,18 @@ if os.path.exists('cleaned_and_normalized_data.csv') or os.path.exists('oversamp
 
     st.title("Multi-Label LSTM Training")
 
-    lstm_units = st.slider("LSTM Units", 32, 256, 128, step=16)
-    bidirectional = st.checkbox("Use Bidirectional LSTM", value=True)
-    dense1_units = st.slider("Dense Layer 1 Units", 64, 1024, 512, step=64)
-    dropout1_rate = st.slider("Dropout Rate after Dense 1", 0.0, 0.7, 0.5, step=0.05)
-
-    dense2_units = st.slider("Dense Layer 2 Units", 64, 512, 256, step=32)
-    dropout2_rate = st.slider("Dropout Rate after Dense 2", 0.0, 0.5, 0.3, step=0.05)
-
-    dense3_units = st.slider("Dense Layer 3 Units", 32, 256, 128, step=16)
-    dropout3_rate = st.slider("Dropout Rate after Dense 3", 0.0, 0.5, 0.3, step=0.05)
+    lstm_units = st.slider("BiLSTM Units", 32, 256, 64, step=16)
+    # bidirectional = st.checkbox("Use Bidirectional LSTM", value=True)
+    reccurent_dropout = st.slider("Recurrent Dropout", 0.0, 2, 0.5, step=0.05)
+    dense_units = st.slider("Dense Layer  Units", 64, 1024, 512, step=64)
+    dropout_rate = st.slider("Dropout Rate", 0.0, 0.7, 0.4, step=0.05)
 
     epochs = st.slider("Epochs", 1, 50, 10)
     batch_size = st.slider("Batch Size", 8, 32, 128, step=8)
     if st.button("Train Model with LSTM"):
         lstm(lstm_units=lstm_units, 
-             dense1_units=dense1_units, 
-             dropout1_rate=dropout1_rate,
-             dense2_units=dense2_units, 
-             dropout2_rate=dropout2_rate, 
-             dense3_units=dense3_units, 
-             dropout3_rate=dropout3_rate, 
+             dense1_units=dense_units, 
+             dropout1_rate=dropout_rate
              epochs=epochs, 
              batch_size=batch_size,
              bidirectional=bidirectional)
