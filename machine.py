@@ -207,7 +207,7 @@ if os.path.exists('cleaned_and_normalized_data.csv') or os.path.exists('oversamp
 
     lstm_units = st.slider("BiLSTM Units", 32, 256, 64, step=16)
     # bidirectional = st.checkbox("Use Bidirectional LSTM", value=True)
-    reccurent_dropout = st.slider("Recurrent Dropout", 0.0, 2, 0.5, step=0.05)
+    reccurent_dropout = st.slider("Recurrent Dropout", 0.0, 2.0, 0.5, step=0.05)
     dense_units = st.slider("Dense Layer  Units", 64, 1024, 512, step=64)
     dropout_rate = st.slider("Dropout Rate", 0.0, 0.7, 0.4, step=0.05)
 
