@@ -15,7 +15,8 @@ def evaluate_model():
     model = load_model('lstm_model.h5')
     X_test_pad = st.session_state.X_test_pad
     y_test = st.session_state.y_test
-    bar.progress(0.1)
+    bar.progress(1)
+    status.text("Model loaded successfully.")
 
    # Predict probabilities
     y_pred = model.predict(X_test_pad)
@@ -24,7 +25,7 @@ def evaluate_model():
     y_pred_binary = (y_pred > 0.5).astype(int)
 
     total_binary_accuracy = (y_pred_binary == y_test).mean()
-    print(f"Overall Binary Accuracy (per label, averaged): {total_binary_accuracy:.4f}")
+    st.text(f"Overall Binary Accuracy (per label, averaged): {total_binary_accuracy:.4f}")
 
 #     # Show classification reports
 #     st.subheader("Classification Reports")
