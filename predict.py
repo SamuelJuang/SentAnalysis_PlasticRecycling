@@ -58,16 +58,23 @@ if st.button("Predict"):
     if user_input:
         model, vectorizer = load_model_and_vectorizer()
         predictions = predict(user_input, model, vectorizer)
-        
-        recycle_prediction = np.argmax(predictions[0], axis=1)
-        pet_prediction = np.argmax(predictions[1], axis=1)
-        process_prediction = np.argmax(predictions[2], axis=1)
-        future_prediction = np.argmax(predictions[3], axis=1)
+        probs = predictions[0]
+        label_groups = {
+            'Recyclability': ['Recyclability_positive', 'Recyclability_negative', 'Recyclability_neutral'],
+            'PET': ['PET_positive', 'PET_negative', 'PET_neutral'],
+            'Processing': ['Processing_positive', 'Processing_negative', 'Processing_neutral'],
+            'Future': ['Future_positive', 'Future_negative', 'Future_neutral']
+        }
+        all_labels = sum(label_groups.values(), [])
+        label_prob_map = dict(zip(all_labels, probs))
+
         st.subheader("Predictions:")
-        st.write("Predicted Text:", user_input)
-        st.write("Recyclability Prediction:", label_categories['Recyclability'][recycle_prediction[0]])
-        st.write("Recyclability (PET) Prediction:", label_categories['Recyclability (PET)'][pet_prediction[0]])
-        st.write("Recycling Prediction:", label_categories['Recycling'][process_prediction[0]])
-        st.write("Future Prediction:", label_categories['Future'][future_prediction[0]])
+        st.write("Text:", user_input)
+
+        for group, labels in label_groups.items():
+            group_probs = [label_prob_map[label] for label in labels]
+            best_idx = np.argmax(group_probs)
+            sentiment = labels[best_idx].split("_")[-1]
+            st.write(f"{group}: {sentiment.capitalize()} (Confidence: {group_probs[best_idx]:.2f})")
     else:
         st.error("Please enter some text to predict.")
