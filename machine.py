@@ -132,7 +132,7 @@ def lstm(lstm_units,re_dropout, dense_units,dropout_rate, epoch_num):
     bar.progress(0.8)
     # ---- TRAIN ----
     callback = StreamlitProgressBarCallback(10)
-    history = model.fit(X_train_pad, y_train, epochs=epoch_num, batch_size=32, validation_split=0.2,callbacks=[early_stop])
+    history = model.fit(X_train_pad, y_train, epochs=epoch_num, batch_size=32, validation_split=0.2,callbacks=[early_stop,callback])
 
     bar.progress(0.9)
     status.success("Model training complete!")
@@ -151,9 +151,6 @@ def lstm(lstm_units,re_dropout, dense_units,dropout_rate, epoch_num):
     plt.legend()
     plt.grid(True)
     st.pyplot(fig_loss)
-
-    # Outputs to visualize
-    outputs = ['recycle', 'pet', 'process', 'future']
 
     # Accuracy plots 
     st.subheader("Accuracy per Epoch")
