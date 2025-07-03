@@ -9,7 +9,7 @@ from tensorflow.keras.preprocessing.sequence import pad_sequences
 
 @st.cache_resource
 def load_model_and_vectorizer():
-    model = tf.keras.models.load_model("lstm_model.h5")  
+    model = tf.keras.models.load_model('lstm_model.keras')
     vectorizer = joblib.load("vectorizer.pkl")
     if not model or not vectorizer:
         raise ValueError("Model or vectorizer not found. Please ensure they are correctly loaded.")

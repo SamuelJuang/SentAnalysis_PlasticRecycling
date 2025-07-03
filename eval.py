@@ -12,7 +12,7 @@ def evaluate_model():
     bar = st.progress(0)
     status.text("Loading model...")
 
-    model = load_model('lstm_model.h5')
+    model = load_model('lstm_model.keras')
     X_test_pad = st.session_state.X_test_pad
     y_test = st.session_state.y_test
     bar.progress(1.0)

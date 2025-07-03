@@ -165,7 +165,7 @@ def lstm(lstm_units,re_dropout, dense_units,dropout_rate, epoch_num):
     st.pyplot(fig_acc)
    
     # Save the model
-    model.save('lstm_model.h5')
+    model.save("lstm_model.keras", save_format='keras')
 
     
 
