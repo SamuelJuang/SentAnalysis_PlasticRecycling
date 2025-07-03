@@ -131,7 +131,7 @@ def lstm(lstm_units,re_dropout, dense_units,dropout_rate, epoch_num):
     
     bar.progress(0.8)
     # ---- TRAIN ----
-    callback = StreamlitProgressBarCallback(10)
+    callback = StreamlitProgressBarCallback(epoch_num)
     history = model.fit(X_train_pad, y_train, epochs=epoch_num, batch_size=32, validation_split=0.2,callbacks=[early_stop,callback])
 
     bar.progress(0.9)
