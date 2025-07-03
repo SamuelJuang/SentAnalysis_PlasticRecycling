@@ -123,7 +123,7 @@ def lstm(lstm_units,re_dropout, dense_units,dropout_rate, epoch_num):
     # Compile with binary crossentropy loss for multi-label
     model.compile(optimizer=Adam(learning_rate=0.001),
                 loss='binary_crossentropy',
-                metrics=['accuracy', 'precision', 'recall'])
+                metrics=['accuracy'])
 
 
     model.summary()
