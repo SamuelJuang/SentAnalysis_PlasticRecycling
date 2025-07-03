@@ -106,7 +106,7 @@ def lstm(lstm_units,re_dropout, dense_units,dropout_rate, epoch_num):
     x = Embedding(input_dim=vocab_size, output_dim=embedding_dim, input_length=max_len)(inputs)
 
     # Bidirectional LSTM layer
-    x = Bidirectional(LSTM(lstm_units, return_sequences=True, recurrent_dropout= reccurent_dropout))(x)
+    x = Bidirectional(LSTM(lstm_units, return_sequences=True, recurrent_dropout= re_dropout))(x)
     x = GlobalMaxPooling1D()(x)
     x = Dense(dense_units, activation='relu')(x)
     x = BatchNormalization()(x)
