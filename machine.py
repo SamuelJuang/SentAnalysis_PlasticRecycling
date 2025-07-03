@@ -7,9 +7,10 @@ from Sastrawi.Stemmer.StemmerFactory import StemmerFactory
 import nltk
 from tensorflow.keras.callbacks import EarlyStopping
 from tensorflow.keras.models import Model
-from tensorflow.keras.layers import Input, Dense, Dropout, Embedding, LSTM, Bidirectional
+from tensorflow.keras.layers import Input, Dense, Dropout, Embedding, LSTM, Bidirectional,BatchNormalization,GlobalMaxPooling1D
 import tensorflow as tf
 from tensorflow.keras.callbacks import Callback
+from tensorflow.keras.optimizers import Adam
 import numpy as np
 import joblib
 import os
@@ -45,31 +46,24 @@ def lstm(lstm_units,re_dropout, dense_units,dropout_rate, epoch_num):
     # TRAIN TEST SPLIT
     status.text("Splitting the data into train and test sets...")
     bar.progress(0.1)
-    y_recycle = df_encoded[[ 
-        "Recycling_Negative", "Recycling_Neutral", "Recycling_Positive"
-    ]]
-    y_pet = df_encoded[[ 
-        "Recyclability (PET)_Negative", "Recyclability (PET)_Neutral", "Recyclability (PET)_Positive"
-    ]]
-    y_process = df_encoded[[ 
-        "Recyclability_Negative", "Recyclability_Neutral", "Recyclability_Positive"
-    ]]
-    y_effective = df_encoded[[ 
+
+    # Combine all target columns into a single multi-label matrix
+    target_columns = [
+        "Recycling_Negative", "Recycling_Neutral", "Recycling_Positive",
+        "Recyclability (PET)_Negative", "Recyclability (PET)_Neutral", "Recyclability (PET)_Positive",
+        "Recyclability_Negative", "Recyclability_Neutral", "Recyclability_Positive",
         "Future_Negative", "Future_Neutral", "Future_Positive"
-    ]]
+    ]
 
-    # Features
-    X = df_encoded["text"]  # Or other input features
+    # Features: Assuming 'text' column is your input
+    X = df_encoded["text"].values  # Or tokenized form if already processed
+    y = df_encoded[target_columns].values  # Shape: (num_samples, 12)
 
-    # Train-test split for multiple labels
-    X_train, X_test, y_recycle_train, y_recycle_test, y_pet_train, y_pet_test, \
-    y_process_train, y_process_test, y_effective_train, y_effective_test = train_test_split(
-        X, y_recycle, y_pet, y_process, y_effective, test_size=0.2, random_state=42
+    # Split into training and testing sets
+    X_train, X_test, y_train, y_test = train_test_split(
+        X, y, test_size=0.2, random_state=42, shuffle=True
     )
-    st.session_state.y_effective_test = y_effective_test
-    st.session_state.y_process_test = y_process_test
-    st.session_state.y_pet_test = y_pet_test
-    st.session_state.y_recycle_test = y_recycle_test
+    st.session_state.y_test = y_test
 
     status.text("Tokenizing the data...")
     bar.progress(0.2)
@@ -96,55 +90,49 @@ def lstm(lstm_units,re_dropout, dense_units,dropout_rate, epoch_num):
         "Recycling_Negative", "Recycling_Neutral", "Recycling_Positive",
         "Future_Negative", "Future_Neutral", "Future_Positive"
     ]
-    vocab_size = len(tokenizer.word_index) + 1
-    embedding_dim = 100
     max_len = X_train_pad.shape[1]
 
     bar.progress(0.5)
-    inputs = Input(shape=(max_len,))
+    vocab_size = len(tokenizer.word_index) + 1
+    embedding_dim = 100
+
+
+    early_stop = EarlyStopping(monitor='val_loss', patience=3, restore_best_weights=True)
+
+    # Input layer for padded sequences
+    inputs = Input(shape=(max_len,), name='text_input')
+
+    # Embedding layer
     x = Embedding(input_dim=vocab_size, output_dim=embedding_dim, input_length=max_len)(inputs)
-    x = Bidirectional(LSTM(lstm_units,recurrent_dropout=re_dropout))(x)
+
+    # Bidirectional LSTM layer
+    x = Bidirectional(LSTM(lstm_units, return_sequences=True, recurrent_dropout= reccurent_dropout))(x)
+    x = GlobalMaxPooling1D()(x)
     x = Dense(dense_units, activation='relu')(x)
+    x = BatchNormalization()(x)
+
     x = Dropout(dropout_rate)(x)
 
-    output_general = Dense(3, activation='softmax', name='recycle')(x)
-    output_pet = Dense(3, activation='softmax', name='pet')(x)
-    output_process = Dense(3, activation='softmax', name='process')(x)
-    output_future = Dense(3, activation='softmax', name='future')(x)
 
-    status.text("training the model...")
-    model = Model(inputs=inputs, outputs=[output_general, output_pet, output_process, output_future])
-    model.compile(
-        optimizer='adam',
-        loss={
-            'recycle': 'categorical_crossentropy',
-            'pet': 'categorical_crossentropy',
-            'process': 'categorical_crossentropy',
-            'future': 'categorical_crossentropy'
-        },
-        metrics={
-            'recycle': 'accuracy',
-            'pet': 'accuracy',
-            'process': 'accuracy',
-            'future': 'accuracy'
-        }
-    )
+    # Output layer for multi-label (12 classes) with sigmoid activation
+    output = Dense(12, activation='sigmoid', name='multi_label_output')(x)
+
+    # Build model
+    model = Model(inputs=inputs, outputs=output)
+
+    # Compile with binary crossentropy loss for multi-label
+    model.compile(optimizer=Adam(learning_rate=0.001),
+                loss='binary_crossentropy',
+                metrics=['accuracy', 'precision', 'recall'])
+
+
+    model.summary()
+
+    
     bar.progress(0.8)
     # ---- TRAIN ----
     callback = StreamlitProgressBarCallback(10)
-    history = model.fit(
-        X_train_pad,
-        {
-            'recycle': y_recycle_train,
-            'pet': y_pet_train,
-            'process': y_process_train,
-            'future': y_effective_train
-        },
-        validation_split = 0.2,
-        epochs=epoch_num,
-        batch_size=32,
-        callbacks=[callback, EarlyStopping(monitor='val_loss', patience=3, restore_best_weights=True)]
-    )
+    history = model.fit(X_train_pad, y_train, epochs=epoch_num, batch_size=32, validation_split=0.2,callbacks=[early_stop])
 
     bar.progress(0.9)
     status.success("Model training complete!")
@@ -167,32 +155,17 @@ def lstm(lstm_units,re_dropout, dense_units,dropout_rate, epoch_num):
     # Outputs to visualize
     outputs = ['recycle', 'pet', 'process', 'future']
 
-    # Accuracy plots per output
-    st.subheader("Accuracy per Epoch for Each Output")
-    for output in outputs:
-        fig_acc = plt.figure(figsize=(8, 5))
-        plt.plot(history.history[f'{output}_accuracy'], label=f'{output.capitalize()} Train Accuracy')
-        plt.plot(history.history[f'val_{output}_accuracy'], label=f'{output.capitalize()} Val Accuracy')
-        plt.title(f'{output.capitalize()} Accuracy per Epoch')
-        plt.xlabel('Epoch')
-        plt.ylabel('Accuracy')
-        plt.legend()
-        plt.grid(True)
-        st.pyplot(fig_acc)
-
-    # Loss plots per output
-    st.subheader("Loss per Epoch for Each Output")
-    for output in outputs:
-        fig_loss = plt.figure(figsize=(8, 5))
-        plt.plot(history.history[f'{output}_loss'], label=f'{output.capitalize()} Train Loss')
-        plt.plot(history.history[f'val_{output}_loss'], label=f'{output.capitalize()} Val Loss')
-        plt.title(f'{output.capitalize()} Loss per Epoch')
-        plt.xlabel('Epoch')
-        plt.ylabel('Loss')
-        plt.legend()
-        plt.grid(True)
-        st.pyplot(fig_loss)
-    
+    # Accuracy plots 
+    st.subheader("Accuracy per Epoch")
+    fig_acc = plt.figure(figsize=(8, 5))
+    plt.plot(history.history['accuracy'], label='Train Accuracy')
+    plt.plot(history.history['val_accuracy'], label='Validation Accuracy')
+    plt.title('Accuracy per Epoch')
+    plt.xlabel('Epoch')
+    plt.ylabel('Accuracy')
+    plt.legend()
+    plt.grid(True)
+    st.pyplot(fig_acc)
    
     # Save the model
     model.save('lstm_model.h5')
