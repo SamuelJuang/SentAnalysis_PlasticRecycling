@@ -80,8 +80,8 @@ def lstm(lstm_units,re_dropout, dense_units,dropout_rate, epoch_num):
     X_test_pad = pad_sequences(X_test_seq, maxlen=max_len, padding='post', truncating='post')
     st.session_state.X_test_pad = X_test_pad
     
-    # Save the vectorizer to a file
-    joblib.dump(tokenizer, 'vectorizer.pkl')
+    # Save the tokenizer to a file
+    joblib.dump(tokenizer, 'tokenizer.pkl')
    
 
     label_columns = [
