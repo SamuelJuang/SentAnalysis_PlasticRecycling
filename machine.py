@@ -166,11 +166,9 @@ def lstm(lstm_units,re_dropout, dense_units,dropout_rate, epoch_num):
 
     
 
-st.title("Multi-Label LSTM Training")
+st.title("Multi-Label BiLSTM Training")
 
 if os.path.exists('cleaned_and_normalized_data.csv') or os.path.exists('oversampled_data.csv'):
-
-    st.title("Multi-Label LSTM Training")
 
     lstm_units = st.slider("BiLSTM Units", 32, 128, 64, step=16)
     reccurent_dropout = st.slider("Recurrent Dropout", 0.0, 1.0, 0.0, step=0.05)
