@@ -52,7 +52,7 @@ def normalize_document(doc):
     return doc
 
 def predict(input_text, model, tokenizer):
-    
+
     input_text = clean_tweet_id(input_text)
     input_text = normalize_document(input_text)
     X_new_seq = tokenizer.texts_to_sequences(input_text)
@@ -82,7 +82,7 @@ if st.button("Predict"):
         label_groups = {
             'Recyclability': ['Recyclability_positive', 'Recyclability_negative', 'Recyclability_neutral'],
             'PET': ['PET_positive', 'PET_negative', 'PET_neutral'],
-            'Processing': ['Processing_positive', 'Processing_negative', 'Processing_neutral'],
+            'Recycling Process': ['Recycling_positive', 'Recycling_negative', 'Recycling_neutral'],
             'Future': ['Future_positive', 'Future_negative', 'Future_neutral']
         }
         all_labels = sum(label_groups.values(), [])
