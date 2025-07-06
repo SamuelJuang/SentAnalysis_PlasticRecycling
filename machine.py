@@ -55,11 +55,10 @@ def lstm(lstm_units,re_dropout, dense_units,dropout_rate, epoch_num):
         "Future_Negative", "Future_Neutral", "Future_Positive"
     ]
 
-    # Features: Assuming 'text' column is your input
-    X = df_encoded["text"].values  # Or tokenized form if already processed
-    y = df_encoded[target_columns].values  # Shape: (num_samples, 12)
 
-    # Split into training and testing sets
+    X = df_encoded["text"].values 
+    y = df_encoded[target_columns].values 
+
     X_train, X_test, y_train, y_test = train_test_split(
         X, y, test_size=0.2, random_state=42, shuffle=True
     )
@@ -80,9 +79,6 @@ def lstm(lstm_units,re_dropout, dense_units,dropout_rate, epoch_num):
     X_test_pad = pad_sequences(X_test_seq, maxlen=max_len, padding='post', truncating='post')
     st.session_state.X_test_pad = X_test_pad
     
-    # Save the tokenizer to a file
-    joblib.dump(tokenizer, 'tokenizer.pkl')
-   
 
     label_columns = [
         "Recyclability_Negative", "Recyclability_Neutral", "Recyclability_Positive",
@@ -165,6 +161,7 @@ def lstm(lstm_units,re_dropout, dense_units,dropout_rate, epoch_num):
     st.pyplot(fig_acc)
    
     # Save the model
+    joblib.dump(tokenizer, 'tokenizer.pkl')
     model.save("lstm_model.keras", save_format='keras')
 
     
@@ -175,15 +172,12 @@ if os.path.exists('cleaned_and_normalized_data.csv') or os.path.exists('oversamp
 
     st.title("Multi-Label LSTM Training")
 
-    lstm_units = st.slider("BiLSTM Units", 32, 256, 64, step=16)
-    # bidirectional = st.checkbox("Use Bidirectional LSTM", value=True)
-    reccurent_dropout = st.slider("Recurrent Dropout", 0.0, 2.0, 0.5, step=0.05)
-    dense_units = st.slider("Dense Layer  Units", 64, 1024, 512, step=64)
-    dropout_rate = st.slider("Dropout Rate", 0.0, 0.7, 0.4, step=0.05)
-
+    lstm_units = st.slider("BiLSTM Units", 32, 128, 64, step=16)
+    reccurent_dropout = st.slider("Recurrent Dropout", 0.0, 1.0, 0.0, step=0.05)
+    dense_units = st.slider("Dense Layer  Units", 32, 128, 64, step=32)
+    dropout_rate = st.slider("Dropout Rate", 0.0, 0.7, 0.5, step=0.05)
     epochs = st.slider("Epochs", 1, 50, 10)
-    batch_size = st.slider("Batch Size", 8,128, 32, step=8)
-    if st.button("Train Model with LSTM"):
+    if st.button("Train Model"):
         lstm(lstm_units=lstm_units, 
              re_dropout=reccurent_dropout,
              dense_units=dense_units, 

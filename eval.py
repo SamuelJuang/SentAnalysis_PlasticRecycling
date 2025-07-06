@@ -18,14 +18,11 @@ def evaluate_model():
     bar.progress(1.0)
     status.text("Model loaded successfully.")
 
-   # Predict probabilities
     y_pred = model.predict(X_test_pad)
-
-    # Convert to binary predictions with threshold 0.5
     y_pred_binary = (y_pred > 0.5).astype(int)
 
     total_binary_accuracy = (y_pred_binary == y_test).mean()
-    st.text(f"Overall Binary Accuracy (per label, averaged): {total_binary_accuracy:.4f}")
+    st.text(f"Overall Accuracy Averaged per Label: {total_binary_accuracy:.4f}")
 
 #     # Show classification reports
 #     st.subheader("Classification Reports")
@@ -64,22 +61,16 @@ def evaluate_model():
 #     ))
 
     st.subheader("Confusion Matrices")
-     # Recyclability
-    # Convert probabilities to binary predictions with threshold
-    y_pred_binary = (y_pred > 0.5).astype(int)
 
-    # Get confusion matrix for each label
     cm = multilabel_confusion_matrix(y_test, y_pred_binary)
 
-    # Optional: Label names (update to your specific label structure)
     label_names = [
         "Recycling_Negative", "Recycling_Neutral", "Recycling_Positive",
         "Recyclability (PET)_Negative", "Recyclability (PET)_Neutral", "Recyclability (PET)_Positive",
         "Recyclability_Negative", "Recyclability_Neutral", "Recyclability_Positive",
         "Future_Negative", "Future_Neutral", "Future_Positive"
     ]
-
-    # Plot confusion matrix for each label
+    
     for idx, matrix in enumerate(cm):
         st.subheader(f"Confusion Matrix for {label_names[idx]}")
         fig_conf = plt.figure(figsize=(4, 3))

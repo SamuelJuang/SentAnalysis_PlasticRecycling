@@ -157,7 +157,10 @@ combined_df = pd.concat([df_tw, df_fb,df], ignore_index=True)
 combined_df = combined_df.dropna(subset=['text'])
 df = combined_df.dropna(subset=['sentimentprocess', 'sentimentpet', 'sentimenteffective', 'sentimentrecycle'])
 
-st.write("Current Data, Not Cleaned")
+st.title("Preprocessing and Training Pipeline")
+
+
+st.write("Current Data")
 df.rename(columns={'sentimenteffective': 'Recyclability'}, inplace=True)
 df.rename(columns={'sentimentpet': 'Recyclability (PET)'}, inplace=True)
 df.rename(columns={'sentimentprocess': 'Recycling'}, inplace=True)
@@ -196,7 +199,6 @@ if('cleaned_state' not in st.session_state):
     else:
         st.session_state.cleaned_state = False
 
-st.title("Preprocessing and Training Pipeline")
 
 with st.container():
     if st.session_state.get('cleaned_state', True):

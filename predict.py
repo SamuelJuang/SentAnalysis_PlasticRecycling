@@ -52,6 +52,7 @@ def normalize_document(doc):
     return doc
 
 def predict(input_text, model, tokenizer):
+    
     input_text = clean_tweet_id(input_text)
     input_text = normalize_document(input_text)
     X_new_seq = tokenizer.texts_to_sequences(input_text)
