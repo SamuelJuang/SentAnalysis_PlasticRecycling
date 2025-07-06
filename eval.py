@@ -65,7 +65,7 @@ def evaluate_model():
     cm = multilabel_confusion_matrix(y_test, y_pred_binary)
 
     label_names = [
-        "Recycling_Negative", "Recycling_Neutral", "Recycling_Positive",
+        "Recyclability_Negative", "Recyclability_Neutral", "Recyclability_Positive",
         "Recyclability (PET)_Negative", "Recyclability (PET)_Neutral", "Recyclability (PET)_Positive",
         "Recycling_Negative", "Recycling_Neutral", "Recycling_Positive",
         "Future_Negative", "Future_Neutral", "Future_Positive"
