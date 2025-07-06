@@ -67,10 +67,10 @@ def evaluate_model():
     label_names = [
         "Recycling_Negative", "Recycling_Neutral", "Recycling_Positive",
         "Recyclability (PET)_Negative", "Recyclability (PET)_Neutral", "Recyclability (PET)_Positive",
-        "Recyclability_Negative", "Recyclability_Neutral", "Recyclability_Positive",
+        "Recycling_Negative", "Recycling_Neutral", "Recycling_Positive",
         "Future_Negative", "Future_Neutral", "Future_Positive"
     ]
-    
+
     for idx, matrix in enumerate(cm):
         st.subheader(f"Confusion Matrix for {label_names[idx]}")
         fig_conf = plt.figure(figsize=(4, 3))

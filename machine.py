@@ -125,6 +125,7 @@ def lstm(lstm_units,re_dropout, dense_units,dropout_rate, epoch_num):
     model.summary()
 
     
+    status.text("Training the Model...")
     bar.progress(0.8)
     # ---- TRAIN ----
     callback = StreamlitProgressBarCallback(epoch_num)
