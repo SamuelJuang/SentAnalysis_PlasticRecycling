@@ -19,11 +19,6 @@ def load_model_and_tokenizer():
 
 def uncapitalize(doc):
     return doc.lower()
-stemmer = StemmerFactory().create_stemmer()
-wpt = nltk.WordPunctTokenizer()
-stopword_factory = StopWordRemoverFactory()
-
-stopword = stopword_factory.get_stop_words()
 
 def clean_tweet_id(text):
     text = text.lower()
@@ -42,19 +37,9 @@ def clean_tweet_id(text):
     
     return text
 
-def normalize_document(doc):
-    doc = uncapitalize(doc)
-    doc = doc.strip()
-    doc = wpt.tokenize(doc)
-    doc = [stemmer.stem(word) for word in doc]
-    doc = [word for word in doc if word not in stopword]
-    doc = " ".join(doc)
-    return doc
-
 def predict(input_text, model, tokenizer):
 
     input_text = clean_tweet_id(input_text)
-    input_text = normalize_document(input_text)
     X_new_seq = tokenizer.texts_to_sequences(input_text)
     X_new_pad = pad_sequences(X_new_seq, padding='post', truncating='post')
     predictions = model.predict(X_new_pad)
