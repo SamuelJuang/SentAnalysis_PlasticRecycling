@@ -50,39 +50,39 @@ def clean_tweet_id(text):
     return text
 
 
-stemmer = StemmerFactory().create_stemmer()
-wpt = nltk.WordPunctTokenizer()
-stopword_factory = StopWordRemoverFactory()
+# stemmer = StemmerFactory().create_stemmer()
+# wpt = nltk.WordPunctTokenizer()
+# stopword_factory = StopWordRemoverFactory()
 
-stopword = stopword_factory.get_stop_words()
+# stopword = stopword_factory.get_stop_words()
 
-def uncapitalize(doc):
-    return doc.lower()
+# def uncapitalize(doc):
+#     return doc.lower()
 
 
-def normalize_document(doc):
-    doc = uncapitalize(doc)
-    doc = doc.strip()
-    doc = wpt.tokenize(doc)
-    doc = [stemmer.stem(word) for word in doc]
-    doc = [word for word in doc if word not in stopword]
-    doc = " ".join(doc)
-    return doc
+# def normalize_document(doc):
+#     doc = uncapitalize(doc)
+#     doc = doc.strip()
+#     doc = wpt.tokenize(doc)
+#     doc = [stemmer.stem(word) for word in doc]
+#     doc = [word for word in doc if word not in stopword]
+#     doc = " ".join(doc)
+#     return doc
 
 
 def preprocess_data():
     status = st.empty()
     bar = st.progress(0.0)
     
-    status.text("Step 1: Lowercasing and cleaning text...")
+    status.text("Step 1: cleaning text...")
     df_encoded['text'] = df_encoded['text'].apply(clean_tweet_id)
     bar.progress(0.3)
 
-    status.text("Step 2: Normalizing and stemming...")
-    df_encoded['text'] = df_encoded['text'].apply(normalize_document)
-    bar.progress(0.7)
+    # status.text("Step 2: Normalizing and stemming...")
+    # df_encoded['text'] = df_encoded['text'].apply(normalize_document)
+    # bar.progress(0.7)
 
-    status.text("Step 3: Saving cleaned data...")
+    status.text("Step 2: Saving cleaned data...")
     df_encoded.to_csv('cleaned_and_normalized_data.csv')
     st.session_state.cleaned_state = True
     bar.progress(1.0)

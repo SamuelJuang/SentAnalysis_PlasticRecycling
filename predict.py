@@ -11,7 +11,7 @@ import emoji
 
 @st.cache_resource
 def load_model_and_tokenizer():
-    model = tf.keras.models.load_model('lstm_model.keras')
+    model = tf.keras.models.load_model('bilstm_model.keras')
     tokenizer = joblib.load("tokenizer.pkl")
     if not model or not tokenizer:
         raise ValueError("Model or tokenizer not found. Please ensure they are correctly loaded.")

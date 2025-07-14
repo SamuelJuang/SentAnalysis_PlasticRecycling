@@ -163,7 +163,7 @@ def lstm(lstm_units,re_dropout, dense_units,dropout_rate, epoch_num):
    
     # Save the model
     joblib.dump(tokenizer, 'tokenizer.pkl')
-    model.save("lstm_model.keras", save_format='keras')
+    model.save("bilstm_model.keras", save_format='keras')
 
     
 

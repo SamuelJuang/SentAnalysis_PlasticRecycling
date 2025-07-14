@@ -12,7 +12,7 @@ def evaluate_model():
     bar = st.progress(0)
     status.text("Loading model...")
 
-    model = load_model('lstm_model.keras')
+    model = load_model('bilstm_model.keras')
     X_test_pad = st.session_state.X_test_pad
     y_test = st.session_state.y_test
     bar.progress(1.0)
@@ -23,42 +23,6 @@ def evaluate_model():
 
     total_binary_accuracy = (y_pred_binary == y_test).mean()
     st.text(f"Overall Accuracy Averaged per Label: {total_binary_accuracy:.4f}")
-
-#     # Show classification reports
-#     st.subheader("Classification Reports")
-#     label_categories = {
-#     "Recyclability": ["Negative", "Neutral", "Positive"],
-#     "Recyclability (PET)": ["Negative", "Neutral", "Positive"],
-#     "Recycling": ["Negative", "Neutral", "Positive"],
-#     "Future": ["Negative", "Neutral", "Positive"]
-# }
-#     st.text("Recyclability:")
-#     st.code(classification_report(
-#         y_true_recycle,
-#         y_pred_recycle,
-#         target_names=label_categories['Recyclability']
-#     ))
-
-#     st.text("Recyclability (PET):")
-#     st.code(classification_report(
-#         y_true_pet,
-#         y_pred_pet,
-#         target_names=label_categories['Recyclability (PET)']
-#     ))
-
-#     st.text("Recycling:")
-#     st.code(classification_report(
-#         y_true_process,
-#         y_pred_process,
-#         target_names=label_categories['Recycling']
-#     ))
-#     bar.progress(0.5)
-#     st.text("Future:")
-#     st.code(classification_report(
-#         y_true_future,
-#         y_pred_future,
-#         target_names=label_categories['Future']
-#     ))
 
     st.subheader("Confusion Matrices")
 
@@ -84,7 +48,7 @@ def evaluate_model():
         
 
 
-if(os.path.exists('lstm_model.h5') and st.session_state.get('X_test_pad') is not None):
+if(os.path.exists('bilstm_model.h5') and st.session_state.get('X_test_pad') is not None):
     st.title("Model Evaluation")
     evaluate_model()
 else:
