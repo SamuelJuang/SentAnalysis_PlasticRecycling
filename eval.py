@@ -48,7 +48,7 @@ def evaluate_model():
         
 
 
-if(os.path.exists('bilstm_model.h5') and st.session_state.get('X_test_pad') is not None):
+if(os.path.exists('bilstm_model.keras') and st.session_state.get('X_test_pad') is not None):
     st.title("Model Evaluation")
     evaluate_model()
 else:
