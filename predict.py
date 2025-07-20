@@ -12,12 +12,12 @@ import os
 
 @st.cache_resource
 def load_model_and_tokenizer():
-    if not os.path.exists('bilstm_model.keras'):
+    if not os.path.exists('bilstm_model.keras') or not os.path.exists('tokenizer.pkl'):
         st.error("Model file not found. Please ensure the model is trained")
-
-    model = tf.keras.models.load_model('bilstm_model.keras')
-    tokenizer = joblib.load("tokenizer.pkl")
-    return model, tokenizer
+    else:
+        model = tf.keras.models.load_model('bilstm_model.keras')
+        tokenizer = joblib.load("tokenizer.pkl")
+        return model, tokenizer
 
 def uncapitalize(doc):
     return doc.lower()
