@@ -14,6 +14,7 @@ import os
 def load_model_and_tokenizer():
     if not os.path.exists('bilstm_model.keras') or not os.path.exists('tokenizer.pkl'):
         st.error("Model file not found. Please ensure the model is trained")
+        return None, None
     else:
         model = tf.keras.models.load_model('bilstm_model.keras')
         tokenizer = joblib.load("tokenizer.pkl")
@@ -64,6 +65,8 @@ label_categories = {
 if st.button("Predict"):
     if user_input:
         model, tokenizer = load_model_and_tokenizer()
+        if(not model or not tokenizer):
+            st.stop()
         predictions = predict(user_input, model, tokenizer)
         probs = predictions[0]
         label_groups = {
