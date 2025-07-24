@@ -7,7 +7,7 @@ predict_page = st.Page("predict.py", title="Prediction", icon="🎉")
 
 
 
-pg = st.navigation([data_page,machine_page ,eval_page, predict_page])
+pg = st.navigation([predict_page])
 
 
 pg.run()
