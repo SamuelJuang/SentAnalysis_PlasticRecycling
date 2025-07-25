@@ -12,7 +12,7 @@ import os
 
 @st.cache_resource
 def load_model_and_tokenizer():
-    model = tf.keras.models.load_model('model.BiLSTM.keras')
+    model = tf.keras.models.load_model('model_BiLSTM.keras')
     tokenizer = joblib.load("tokenizer_from_final.pkl")
     return model, tokenizer
 
